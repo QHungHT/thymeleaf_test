@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout-admin.html}">
+
+<section class="row" layout:fragment="content">
+    <div class="col mt-4">
+        <div class="card">
+            <div class="card-header">List Category</div>
+            <div class="card-body">
+                <!-- Hiển thông báo -->
+                <div th:if="${message != null}" class="alert alert-primary" role="alert">
+                    <i th:text="${message}"></i>
+                </div>
+                <!-- Hết thông báo -->
+
+                <!-- Form tìm kiếm -->
+                <div class="row mt-2 mb-2">
+                    <div class="col-md-6">
+                        <form th:action="@{/admin/categories/searchpaginated}">
+                            <div class="input-group">
+                                <input type="text" class="form-control ml-2" name="name"
+                                       id="name" placeholder="Nhập từ khóa để tìm" />
+                                <button class="btn btn-outline-primary ml-2">Search</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="float-right">
+                            <a class="btn btn-outline-success"
+                               th:href="@{/admin/categories/add}">Add New Category</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bảng danh sách category -->
+                <table class="table table-striped table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Category ID</th>
+                            <th>Category Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="category : ${categoryPage.content}">
+                            <td scope="row" th:text="${category.categoryId}"></td>
+                            <td th:text="${category.name}"></td>
+                            <td>
+                                <a th:href="@{/admin/categories/view/{id}(id=${category.categoryId})}"
+                                   class="btn btn-outline-info">
+                                    <i class="fa fa-info"></i>
+                                </a>
+                                <a th:href="@{/admin/categories/edit/{id}(id=${category.categoryId})}"
+                                   class="btn btn-outline-warning">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <a th:href="@{/admin/categories/delete/{id}(id=${category.categoryId})}"
+                                   class="btn btn-outline-danger">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phân trang và chọn kích thước trang -->
+            <div class="card-footer text-muted">
+                <div class="row">
+                    <!-- Chọn kích thước trang -->
+                    <div class="col-3">
+                        <form action="">
+                            <div class="mb-3 input-group float-left">
+                                <label for="size" class="mr-2">Page size:</label>
+                                <select class="form-select ml-2" name="size" id="size" 
+                                        onchange="this.form.submit()">
+                                    <option th:selected="${categoryPage.size == 3}" value="3">3</option>
+                                    <option th:selected="${categoryPage.size == 5}" value="5">5</option>
+                                    <option th:selected="${categoryPage.size == 10}" value="10">10</option>
+                                    <option th:selected="${categoryPage.size == 15}" value="15">15</option>
+                                    <option th:selected="${categoryPage.size == 20}" value="20">20</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Điều hướng phân trang -->
+                    <div class="col-7" aria-label="Page navigation"
+                         th:if="${categoryPage.totalPages > 0}">
+                        <ul class="pagination justify-content-center">
+                            <!-- Nút "First" -->
+                            <li class="page-item"
+                                th:class="${1 == categoryPage.number + 1} ? 'page-item active' : 'page-item'">
+                                <a th:href="@{/admin/categories/searchpaginated(name=${name},size=${categoryPage.size},page=1)}"
+                                   class="page-link">First</a>
+                            </li>
+
+                            <!-- Các số trang -->
+                            <li class="page-item active"
+                                th:each="pageNumber : ${pageNumbers}"
+                                th:class="${pageNumber == categoryPage.number + 1} ? 'page-item active' : 'page-item'">
+                                <a th:href="@{/admin/categories/searchpaginated(name=${name},size=${categoryPage.size},page=${pageNumber})}"
+                                   class="page-link" th:text="${pageNumber}"></a>
+                            </li>
+
+                            <!-- Nút "Last" -->
+                            <li class="page-item"
+                                th:class="${categoryPage.totalPages == categoryPage.number + 1} ? 'page-item active' : 'page-item'">
+                                <a th:href="@{/admin/categories/searchpaginated(name=${name},size=${categoryPage.size},page=${categoryPage.totalPages})}"
+                                   class="page-link">Last</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+</html>
